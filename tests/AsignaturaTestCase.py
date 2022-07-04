@@ -4,13 +4,13 @@ from src.seleccionestudiante.modelo.Asignatura import Asignatura
 from src.seleccionestudiante.modelo.Estudiante import Estudiante
 from src.seleccionestudiante.modelo.Equipo import Equipo
 from src.seleccionestudiante.modelo.Actividad import Actividad
-from src.seleccionestudiante.logica.Sorteo import Sorteo
+from src.seleccionestudiante.logica.GestionAsignatura import GestionAsignatura
 from src.seleccionestudiante.modelo.declarative_base import Session
 
 class AsignaturaTestCase ( unittest.TestCase ) :
     def setUp ( self ) :
-        # Crea una sorteo para hacer las pruebas
-        self.sorteo = Sorteo ( )
+        # Crea una gestionAsignatura para hacer las pruebas
+        self.gestionAsignatura = GestionAsignatura ()
 
         # Abre la sesión
         self.session = Session ( )
@@ -49,7 +49,7 @@ class AsignaturaTestCase ( unittest.TestCase ) :
         self.actividad1 = Actividad ( denominacionActividad = "Prueba unitaria" ,
                                  fecha = datetime ( 2021 , 9 , 28 , 00 , 00 , 00 , 00000 ) )
         self.actividad2 = Actividad ( denominacionActividad = "TDD" , fecha = datetime ( 2021 , 9 , 25 , 00 , 00 , 00 , 00000 ) )
-        self.actividad3 = Actividad ( denominacionActividad = "BDD" , fecha = datetime ( 2021 , 9 , 25 , 00 , 00 , 00 , 00000 ) )
+        self.actividad3 = Actividad ( denominacionActividad = "BDD" , fecha = datetime ( 2021 , 10 , 15 , 00 , 00 , 00 , 00000 ) )
         self.session.add ( self.actividad1 )
         self.session.add ( self.actividad2 )
         self.session.add ( self.actividad3 )
@@ -100,9 +100,30 @@ class AsignaturaTestCase ( unittest.TestCase ) :
         self.session.close ( )
 
     def test_agregar_asignatura ( self ) :
-        resultado = self.sorteo.agregar_asignatura ( nombreAsignatura = "Estructura de datos" )
+        resultado = self.gestionAsignatura.agregar_asignatura (nombreAsignatura ="Estructura de datos")
         self.assertEqual ( resultado , True )
 
     def test_agregar_asignatura_repetido(self):
-        resultado = self.sorteo.agregar_asignatura(nombreAsignatura = "Pruebas de software")
-        self.assertNotEqual(resultado, True)
+        resultado = self.gestionAsignatura.agregar_asignatura(nombreAsignatura ="Pruebas de software")
+        self.assertEqual(resultado, False)
+
+    def test_agregar_asignatura_NombreAsignaturaNoVacio ( self ) :
+        resultado = self.gestionAsignatura.agregar_asignatura (nombreAsignatura ="")
+        self.assertEqual ( resultado , False )
+
+    def test_editar_asignatura(self):
+        #Cambiando por una asignatura que no existe
+        prueba1 = self.gestionAsignatura.editar_asignatura(idAsignatura = 1, nombreAsignatura = "Innovación social")
+
+        #Cmabiando por una asignatura que si existe
+        prueba2 = self.gestionAsignatura.editar_asignatura(idAsignatura = 2, nombreAsignatura = "Construccion de Software")
+
+    def test_verificar_almacenamiento_agregar_asignatura(self):
+        '''Verifica que al almacenar los datos queden guardados en el almacenamiento'''
+        resultado = self.gestionAsignatura.agregar_asignatura(nombreAsignatura="Pruebas de software")
+
+        self.session = Session()
+        asignatura = self.session.query(Asignatura).filter(Asignatura.nombreAsignatura == "Pruebas de software").first()
+
+        self.assertEqual(resultado, True)
+        self.assertEqual(asignatura.nombreAsignatura, "Pruebas de software")

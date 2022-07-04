@@ -2,7 +2,7 @@ from src.seleccionestudiante.modelo.Asignatura import Asignatura, AsignaturaEstu
 from src.seleccionestudiante.modelo.Estudiante import Estudiante
 from src.seleccionestudiante.modelo.Equipo import Equipo
 from src.seleccionestudiante.modelo.Actividad import Actividad
-from src.seleccionestudiante.logica.Sorteo import Sorteo
+from src.seleccionestudiante.logica.GestionAsignatura import GestionAsignatura
 from src.seleccionestudiante.modelo.declarative_base import Session, engine, Base
 from datetime import datetime
 
@@ -99,7 +99,7 @@ def eliminarRegistros():
    session.close ( )
 
 if __name__ == '__main__':
-   sorteo=Sorteo()
+   sorteo=GestionAsignatura()
    sorteo.agregar_asignatura ( "Matemática discreta")
    while True:
       print ( "0 Salir" )
